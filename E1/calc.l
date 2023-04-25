@@ -12,20 +12,20 @@ void yyerror(char *s);
 
 %}
 
-DIGIT [0-9]+                   
+DIGIT [0-9]+(\.[0-9]{1,2})?         
 %%
 
-"+"     { return ADD; }
-"-"     { return SUB; }
-"*"	{ return MUL; }
-"/"	{ return DIV; }
-"|"	{ return ABS; }
-{DIGIT} { return NUMBER; }
+"+"      { return ADD; }
+"-"      { return SUB; }
+"*"	   { return MUL; }
+"/"	   { return DIV; }
+"|"	   { return ABS; }
+{DIGIT}  { return NUMBER; }
 
 [ \t]   { /* ignore whitespace */ }
 
-\n      { return EOL; } 
-.   	{ printf("Mistery character %c\n", *yytext); }
+\n                      { return EOL; } 
+.   	                  { return ERROR; }
 %%
 
 int main(int argc, char **argv)
@@ -35,6 +35,10 @@ int main(int argc, char **argv)
    while ((tok = yylex())) {
       printf("%d", tok);
       if (tok == NUMBER) printf(" = %s\n", yytext);
+      else if (tok == ERROR) { 
+         printf("Mistery character %c\n", *yytext);
+         break;
+      }
       else printf("\n");
       if (tok == EOL) break; 
    }
